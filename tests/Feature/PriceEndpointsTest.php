@@ -33,4 +33,24 @@ class PriceEndpointsTest extends TestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors('porcentaje');
     }
+
+    public function test_la_pagina_web_muestra_los_formularios(): void
+    {
+        $this->get('/')->assertOk()->assertSee('Conversor de monedas')->assertSee('Calcular descuento');
+    }
+
+    public function test_la_pagina_web_muestra_la_conversion(): void
+    {
+        $this->get('/?cantidad=100&de=EUR&a=USD')->assertOk()->assertSee('108,00 USD');
+    }
+
+    public function test_la_pagina_web_muestra_el_precio_con_descuento(): void
+    {
+        $this->get('/?precio=80&porcentaje=25')->assertOk()->assertSee('Precio final: 60,00 €');
+    }
+
+    public function test_la_pagina_web_muestra_el_error_de_un_descuento_invalido(): void
+    {
+        $this->get('/?precio=80&porcentaje=150')->assertOk()->assertSee('El descuento debe estar entre 0 y 100.');
+    }
 }

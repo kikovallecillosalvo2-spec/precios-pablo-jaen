@@ -11,6 +11,14 @@ Controlador que convierte importes entre **euros y dólares** y calcula el **pre
 
 Las entradas no válidas (cantidad o precio negativos, moneda distinta de EUR/USD, porcentaje fuera de 0–100) lanzan `InvalidArgumentException`.
 
+## Página web
+
+En `/` hay una página con los dos formularios, que llama a `PriceController@index`:
+
+| Conversor de monedas | Calcular descuento |
+|---|---|
+| ![](docs/conversion.png) | ![](docs/descuento.png) |
+
 El controlador también expone ambas funciones como endpoints JSON:
 
 | Ruta | Respuesta |
@@ -26,7 +34,7 @@ El controlador también expone ambas funciones como endpoints JSON:
 - **Descuento:** un *data provider* con 7 casos (25 %, 10 %, 50 %, 12,5 %, 0 %, 100 % y precio 0), más porcentaje mayor que 100, porcentaje negativo y precio negativo.
 - **Combinado:** aplicar un descuento y convertir el resultado a dólares.
 
-`tests/Feature/PriceEndpointsTest.php` añade 4 tests de los endpoints HTTP.
+`tests/Feature/PriceEndpointsTest.php` añade 8 tests de la página web y de los endpoints JSON.
 
 ```bash
 php artisan test --filter=PriceControllerTest   # solo los tests unitarios del controlador
@@ -58,7 +66,7 @@ Price Controller (Tests\Unit\PriceController)
  ✔ Rechaza un precio negativo
  ✔ Aplica un descuento y convierte el resultado a dolares
 
-OK (26 tests, 35 assertions)
+OK (30 tests, 44 assertions)
 ```
 
 ## Puesta en marcha
@@ -67,5 +75,9 @@ OK (26 tests, 35 assertions)
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan serve        # http://127.0.0.1:8000
+php artisan serve        # abre http://127.0.0.1:8000
 ```
+
+No necesita base de datos: las sesiones y la caché usan ficheros.
+
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use InvalidArgumentException;
 
 class PriceController extends Controller
@@ -56,6 +57,25 @@ class PriceController extends Controller
         }
 
         return round($precio * (1 - $porcentaje / 100), 2);
+    }
+
+    /** Página web con los dos formularios (conversor y descuento). */
+    public function index(Request $request): View
+    {
+        $conversion = $descuento = $error = null;
+
+        try {
+            if ($request->filled('cantidad')) {
+                $conversion = $this->convertir((float) $request->input('cantidad'), (string) $request->input('de', 'EUR'), (string) $request->input('a', 'USD'));
+            }
+            if ($request->filled('precio')) {
+                $descuento = $this->calcularDescuento((float) $request->input('precio'), (float) $request->input('porcentaje', 0));
+            }
+        } catch (InvalidArgumentException $e) {
+            $error = $e->getMessage();
+        }
+
+        return view('precios', ['conversion' => $conversion, 'descuento' => $descuento, 'error' => $error, 'tasa' => self::TASA_EUR_USD]);
     }
 
     /** GET /api/convertir?cantidad=100&de=EUR&a=USD */
